@@ -30,7 +30,7 @@ public class MainVerticle extends AbstractVerticle {
       .setConnectTimeout(800)
       .setDefaultHost("httpbin.org")
       .setDefaultPort(80)
-      .setMetricsName(CLIENT2);
+      .setMetricsName(CLIENT1);
 
     HttpClientOptions options2 = new HttpClientOptions()
       .setKeepAlive(false)
@@ -40,7 +40,7 @@ public class MainVerticle extends AbstractVerticle {
       .setConnectTimeout(800)
       .setDefaultHost("httpbin.org")
       .setDefaultPort(80)
-      .setMetricsName(CLIENT1);
+      .setMetricsName(CLIENT2);
 
     Vertx vertxWithMetrics = Vertx.vertx(new VertxOptions()
       .setMaxWorkerExecuteTime(600000000000L)
@@ -60,10 +60,10 @@ public class MainVerticle extends AbstractVerticle {
     HttpClient client1 = vertxWithMetrics.createHttpClient(options1);
     HttpClient client2 = vertxWithMetrics.createHttpClient(options2);
 
-    vertxWithMetrics.executeBlocking(future -> testClient(client1, vertxWithMetrics, future, CLIENT2), res -> {
+    vertxWithMetrics.executeBlocking(future -> testClient(client1, vertxWithMetrics, future, CLIENT1), res -> {
     });
 
-    vertxWithMetrics.executeBlocking(future -> testClient(client2, vertxWithMetrics, future, CLIENT1), res -> {
+    vertxWithMetrics.executeBlocking(future -> testClient(client2, vertxWithMetrics, future, CLIENT2), res -> {
     });
   }
 
@@ -71,7 +71,7 @@ public class MainVerticle extends AbstractVerticle {
     Random randomizer = new Random();
 
     while (failures < 100) {
-      int random = randomizer.nextInt(1000 * 5);
+      int random = randomizer.nextInt(1000 * 3);
       HttpClientRequest request = client.request(HttpMethod.GET, "/get");
       request.setTimeout(800);
 
