@@ -8,6 +8,7 @@ group = 'com.example'
 version = '1.0.0-SNAPSHOT'
 
 repositories {
+  mavenLocal()
   mavenCentral()
 }
 
@@ -21,13 +22,13 @@ application {
 }
 
 sourceCompatibility = '1.8'
-
+  
 def mainVerticleName = 'com.example.starter.MainVerticle'
 def watchForChange = 'src/**/*'
 def doOnChange = './gradlew classes'
 
 dependencies {
-  implementation "io.vertx:vertx-core:$vertxVersion"
+  implementation "io.vertx:vertx-core-with-logging:$vertxVersion"
   implementation "io.vertx:vertx-dropwizard-metrics:$vertxVersion"
 
   testImplementation "io.vertx:vertx-junit5:3.7.0"

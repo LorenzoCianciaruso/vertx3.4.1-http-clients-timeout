@@ -1,5 +1,6 @@
 package com.example.starter;
 
+import com.example.starter.util.Runner;
 import io.vertx.core.*;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientOptions;
@@ -18,6 +19,11 @@ public class MainVerticle extends AbstractVerticle {
   public static final String CLIENT2 = "client2";
   private int success = 0;
   private int failures = 0;
+
+  public static void main(String[] args) {
+    Runner.runExample(MainVerticle.class);
+  }
+
 
   @Override
   public void start(Future<Void> startFuture) {
@@ -42,33 +48,30 @@ public class MainVerticle extends AbstractVerticle {
       .setDefaultPort(80)
       .setMetricsName(CLIENT2);
 
-//    Vertx vertxWithMetrics = Vertx.vertx(new VertxOptions()
-//      .setMaxWorkerExecuteTime(600000000000L)
-//      .setEventLoopPoolSize(1)
-//      .setMetricsOptions(
-//      new DropwizardMetricsOptions()
-//        .setEnabled(true)
-//        .setJmxEnabled(true)
-//        .setJmxDomain("vertx")
-//        .addMonitoredHttpServerUri(new Match().setValue("/"))
-//        .addMonitoredHttpClientEndpoint(
-//          new Match()
-//            .setValue("https://httpbin.org"))
-//        .setRegistryName("vertx-registry")
-//    ));
+    Vertx vertxWithMetrics = Vertx.vertx(new VertxOptions()
+      .setMaxWorkerExecuteTime(600000000000L)
+      .setEventLoopPoolSize(1)
+      .setMetricsOptions(
+      new DropwizardMetricsOptions()
+        .setEnabled(true)
+        .setJmxEnabled(true)
+        .setJmxDomain("vertx")
+        .addMonitoredHttpServerUri(new Match().setValue("/"))
+        .addMonitoredHttpClientEndpoint(
+          new Match()
+            .setValue("https://httpbin.org"))
+        .setRegistryName("vertx-registry")
+    ));
 
-    HttpClient client1 = vertx.createHttpClient(options1);
-    HttpClient client2 = vertx.createHttpClient(options2);
+    HttpClient client1 = vertxWithMetrics.createHttpClient(options1);
+    HttpClient client2 = vertxWithMetrics.createHttpClient(options2);
 
-    vertx.executeBlocking(future -> {
-      System.out.println("hello");testClient(client1, vertx, future, CLIENT1);}, res -> {
+    vertxWithMetrics.executeBlocking(future -> testClient(client1, vertxWithMetrics, future, CLIENT1), res -> {
     });
 
-    vertx.executeBlocking(future -> {
-      System.out.println("here");
-      testClient(client2, vertx, future, CLIENT2);
-    }, res -> {});
-}
+    vertxWithMetrics.executeBlocking(future -> testClient(client2, vertxWithMetrics, future, CLIENT2), res -> {
+    });
+  }
 
   private void testClient(HttpClient client, Vertx vertxWithMetrics, Future<Object> future, String name) {
     Random randomizer = new Random();
@@ -89,9 +92,9 @@ public class MainVerticle extends AbstractVerticle {
         System.out.println("[" + name + "] FAILURE! " + success + "/" + failures);
       });
 
-      //   MetricsService metricsService = MetricsService.create(vertxWithMetrics);
-      //  JsonObject metrics = metricsService.getMetricsSnapshot(vertxWithMetrics);
-      // System.out.println(metrics);
+      MetricsService metricsService = MetricsService.create(vertxWithMetrics);
+      JsonObject metrics = metricsService.getMetricsSnapshot(vertxWithMetrics);
+      System.out.println(metrics);
 
       request.end();
 
