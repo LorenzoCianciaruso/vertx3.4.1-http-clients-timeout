@@ -1,9 +1,7 @@
 package com.example.starter;
 
 import com.example.starter.util.Runner;
-import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Future;
-import io.vertx.core.WorkerExecutor;
+import io.vertx.core.*;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpClientRequest;
@@ -34,18 +32,20 @@ public class MainVerticle extends AbstractVerticle {
       .setDefaultHost("httpbin.org")
       .setDefaultPort(80);
 
-    WorkerExecutor worker = vertx.createSharedWorkerExecutor("my-worker-pool", 100);
-
     HttpClient client1 = vertx.createHttpClient(options);
     HttpClient client2 = vertx.createHttpClient(options);
 
-    worker.executeBlocking(future -> {
+    Vertx vertx = Vertx.vertx(new VertxOptions()
+        .setMaxWorkerExecuteTime(600000000000L)
+        .setEventLoopPoolSize(1));
+
+    vertx.executeBlocking(future -> {
       testClient(client1, CLIENT1);
       future.complete();
     }, res -> {
     });
 
-    worker.executeBlocking(future -> {
+    vertx.executeBlocking(future -> {
       testClient(client2, CLIENT2);
       future.complete();
     }, res -> {
@@ -56,7 +56,7 @@ public class MainVerticle extends AbstractVerticle {
     System.out.println(name);
     Random randomizer = new Random();
 
-    while (failures < 100) {
+    while (success + failures < 1000) {
       int random = randomizer.nextInt(1000 * 3);
       HttpClientRequest request = client.request(HttpMethod.GET, "/get");
       request.setTimeout(800);

@@ -8,7 +8,6 @@ group = 'com.example'
 version = '1.0.0-SNAPSHOT'
 
 repositories {
-  mavenLocal()
   mavenCentral()
 }
 
@@ -28,12 +27,10 @@ def watchForChange = 'src/**/*'
 def doOnChange = './gradlew classes'
 
 dependencies {
-  implementation "io.vertx:vertx-core-with-logging:$vertxVersion"
+  implementation "io.vertx:vertx-core:$vertxVersion"
   implementation "io.vertx:vertx-dropwizard-metrics:$vertxVersion"
 
-  testImplementation "io.vertx:vertx-junit5:3.7.0"
-  testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitJupiterEngineVersion"
-  testImplementation "org.junit.jupiter:junit-jupiter-api:$junitJupiterEngineVersion"
+  testImplementation "junit:junit:4.12"
 }
 
 
