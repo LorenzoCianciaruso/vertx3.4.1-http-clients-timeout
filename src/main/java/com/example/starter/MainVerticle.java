@@ -53,7 +53,6 @@ public class MainVerticle extends AbstractVerticle {
   }
 
   private void testClient(HttpClient client, String name) {
-    System.out.println(name);
     Random randomizer = new Random();
 
     while (success + failures < 1000) {
