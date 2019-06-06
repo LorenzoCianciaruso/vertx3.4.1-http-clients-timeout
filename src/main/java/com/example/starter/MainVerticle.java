@@ -67,7 +67,7 @@ public class MainVerticle extends AbstractVerticle {
 
       request.exceptionHandler(t -> {
         failures++;
-        System.out.println("Connection=" + System.identityHashCode(request.connection()));
+        System.out.println("Connection=" + System.identityHashCode(request.connection()) + " Exception: " + t.getMessage());
         System.out.println("[" + name + "] FAILURE! " + success + "/" + failures);
       });
 
